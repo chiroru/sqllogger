@@ -1,4 +1,4 @@
-package jp.ddo.chiroru.sqllogger;
+package jp.ddo.chiroru.sqllogger.wrapper;
 
 import java.sql.Array;
 import java.sql.Blob;

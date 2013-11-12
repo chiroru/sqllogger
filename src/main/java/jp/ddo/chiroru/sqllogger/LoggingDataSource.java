@@ -9,92 +9,64 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 /**
- * javax.sql.DataSource Wrapper<br>
- * 
+ * <p>
+ * ロギング機構を組み込むためのエントリーポイントを提供する{@link DataSource}のラッパーです.
+ * </p>
  * @author smts1008@outlook.com
- * @version 1.0.0
  */
 public class LoggingDataSource
-		implements DataSource {
+        implements DataSource {
 
-	//------------------------------------------------------------ properties
+    private DataSource wrappedDataSource;
 
-	protected DataSource realDataSource = null;
+    public LoggingDataSource(DataSource wrappedDataSource) {
+        this.wrappedDataSource = wrappedDataSource;
+    }
 
-	/** Connection Instance counter */
-	private static int counter = 0;
+    @Override
+    public PrintWriter getLogWriter() throws SQLException {
+        return wrappedDataSource.getLogWriter();
+    }
 
-	/** connection id */
-	private int connectionId = counter++;
+    @Override
+    public void setLogWriter(PrintWriter out) throws SQLException {
+        wrappedDataSource.setLogWriter(out);
+    }
 
-	//------------------------------------------------------------ Constructors
-	/**
-	 * 
-	 * @param realDataSource
-	 */
-	public LoggingDataSource(DataSource realDataSource) {
-		this.realDataSource = realDataSource;
-	}
+    @Override
+    public void setLoginTimeout(int seconds) throws SQLException {
+        wrappedDataSource.setLoginTimeout(seconds);
+    }
 
-	//------------------------------------------------------------ Methods
-	/**
-	 * @return connection id
-	 */
-	public int getConnectionId() {
-		return this.connectionId;
-	}
+    @Override
+    public int getLoginTimeout() throws SQLException {
+        return wrappedDataSource.getLoginTimeout();
+    }
 
-	/**
-	 * 
-	 * @return <tt>java.sql.Connection</tt>�̃ wrapper
-	 */
-	public Connection getConnection()
-			throws SQLException {
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return wrappedDataSource.getParentLogger();
+    }
 
-		return realDataSource.getConnection();
-	}
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return wrappedDataSource.unwrap(iface);
+    }
 
-	public Connection getConnection(String username, String password)
-			throws SQLException {
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return wrappedDataSource.isWrapperFor(iface);
+    }
 
-		return realDataSource.getConnection(username, password);
-	}
+    @Override
+    public Connection getConnection() throws SQLException {
+        return wrappedDataSource.getConnection();
+    }
 
-	public PrintWriter getLogWriter() throws SQLException {
-		return this.realDataSource.getLogWriter();
-	}
-
-	public void setLogWriter(PrintWriter writer) throws SQLException {
-		this.realDataSource.setLogWriter(writer);
-	}
-
-	/**
-	 * 
-	 */
-	public void setLoginTimeout(int loginTimeout) throws SQLException {
-		this.realDataSource.setLoginTimeout(loginTimeout);
-	}
-
-	/**
-	 * �
-	 */
-	public int getLoginTimeout() throws SQLException {
-		return this.realDataSource.getLoginTimeout();
-	}
-
-	@Override
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		return realDataSource.getParentLogger();
-	}
-
-	@Override
-	public <T> T unwrap(Class<T> iface) throws SQLException {
-		return realDataSource.unwrap(iface);
-	}
-
-	@Override
-	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		return isWrapperFor(iface);
-	}
+    @Override
+    public Connection getConnection(String username, String password)
+            throws SQLException {
+        return wrappedDataSource.getConnection(username, password);
+    }
 
 }
