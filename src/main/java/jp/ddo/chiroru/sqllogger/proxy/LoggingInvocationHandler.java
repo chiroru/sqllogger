@@ -18,6 +18,7 @@ public class LoggingInvocationHandler<T>
 		this.strategy = strategy;
 	}
 
+	@Override
 	public Object invoke(Object proxy, Method method, Object[] arguments)
 			throws Throwable {
 
