@@ -6,13 +6,13 @@ import org.apache.commons.dbcp.BasicDataSource;
 
 public final class DataSourceUtil {
 
-    private final static ConnectionInfo info = new ConnectionInfo();
+    private final static ConnectionInfo info = ConnectionInfoProvider.provide(Environment.UnitTest);
 
     public static DataSource getDataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl(info.getUrl());
-        dataSource.setDriverClassName(info.getDriver());
-        dataSource.setUsername(info.getUserName());
+        dataSource.setDriverClassName(info.getDriverClass());
+        dataSource.setUsername(info.getUsername());
         dataSource.setPassword(info.getPassword());
         return dataSource;
     }

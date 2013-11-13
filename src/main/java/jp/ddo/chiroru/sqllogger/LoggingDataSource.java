@@ -8,6 +8,9 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import jp.ddo.chiroru.sqllogger.proxy.ConnectionProxyStrategy;
+import jp.ddo.chiroru.sqllogger.proxy.ProxyFactory;
+
 /**
  * <p>
  * ロギング機構を組み込むためのエントリーポイントを提供する{@link DataSource}のラッパーです.
@@ -24,49 +27,68 @@ public class LoggingDataSource
     }
 
     @Override
-    public PrintWriter getLogWriter() throws SQLException {
+    public PrintWriter getLogWriter()
+            throws SQLException {
+        
         return wrappedDataSource.getLogWriter();
     }
 
     @Override
-    public void setLogWriter(PrintWriter out) throws SQLException {
+    public void setLogWriter(PrintWriter out)
+            throws SQLException {
+        
         wrappedDataSource.setLogWriter(out);
     }
 
     @Override
-    public void setLoginTimeout(int seconds) throws SQLException {
+    public void setLoginTimeout(int seconds)
+            throws SQLException {
+        
         wrappedDataSource.setLoginTimeout(seconds);
     }
 
     @Override
-    public int getLoginTimeout() throws SQLException {
+    public int getLoginTimeout()
+            throws SQLException {
+        
         return wrappedDataSource.getLoginTimeout();
     }
 
     @Override
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    public Logger getParentLogger()
+            throws SQLFeatureNotSupportedException {
+        
         return wrappedDataSource.getParentLogger();
     }
 
     @Override
-    public <T> T unwrap(Class<T> iface) throws SQLException {
+    public <T> T unwrap(Class<T> iface)
+            throws SQLException {
+        
         return wrappedDataSource.unwrap(iface);
     }
 
     @Override
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+    public boolean isWrapperFor(Class<?> iface)
+            throws SQLException {
+        
         return wrappedDataSource.isWrapperFor(iface);
     }
 
     @Override
-    public Connection getConnection() throws SQLException {
-        return wrappedDataSource.getConnection();
+    public Connection getConnection()
+            throws SQLException {
+        
+        Connection connection = wrappedDataSource.getConnection();
+        return ProxyFactory.getProxy(Connection.class, connection, new ConnectionProxyStrategy());
     }
 
     @Override
     public Connection getConnection(String username, String password)
             throws SQLException {
-        return wrappedDataSource.getConnection(username, password);
+        
+        Connection connection = wrappedDataSource.getConnection(username, password);
+        return ProxyFactory.getProxy(Connection.class, connection, new ConnectionProxyStrategy());
     }
 
 }

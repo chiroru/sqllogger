@@ -3,49 +3,65 @@ package jp.ddo.chiroru.sqllogger.util;
 import java.io.IOException;
 import java.util.Properties;
 
-public class ConnectionInfo {
+public final class ConnectionInfo {
 
-    private final static String TARGET_PROPERTY_FILE = "/jdbc_ut.properties";
-    private final Properties props;
+    private String username;
+    private String password;
+    private String url;
+    private String schema;
+    private String driverClass;
+    private String baseDir;
+    private String databaseName;
 
-    public ConnectionInfo() {
-        props = new Properties();
+    public ConnectionInfo(String propertyPath) {
         try {
-            props.load(this.getClass().getResourceAsStream(TARGET_PROPERTY_FILE));
+            ClassPathPropertyLoader loader = ClassPathPropertyLoader.getInstance();
+            Properties props = loader.load(propertyPath);
+            username = props.getProperty("jdbc.username");
+            password = props.getProperty("jdbc.password");
+            url = props.getProperty("jdbc.url");
+            driverClass = props.getProperty("jdbc.driver");
+            schema = props.getProperty("jdbc.schema");
+            baseDir = props.getProperty("h2.baseDir");
+            databaseName = props.getProperty("h2.databaseName");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }
     }
 
-    public String getUrl() {
-        return props.getProperty("jdbc.url");
-    }
-
-    public String getUserName() {
-        return props.getProperty("jdbc.username");
+    public String getUsername() {
+        return this.username;
     }
 
     public String getPassword() {
-        return props.getProperty("jdbc.password");
+        return this.password;
     }
 
-    public String getDriver() {
-        return props.getProperty("jdbc.driver");
+    public String getUrl() {
+        return this.url;
+    }
+
+    public String getDriverClass() {
+        return this.driverClass;
     }
 
     public String getSchema() {
-        return props.getProperty("jdbc.schema");
-    }
-
-    protected String generateUrl() {
-        return "jdbc:h2:tcp://127.0.0.1/" + getBaseDir() + "/" + getDbName();
+        return this.schema;
     }
 
     public String getBaseDir() {
-        return props.getProperty("base.dir");
+        return baseDir;
     }
 
-    public String getDbName() {
-        return props.getProperty("db.name");
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
+    }
+
+    public String getDatabaseName() {
+        return databaseName;
+    }
+
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
     }
 }

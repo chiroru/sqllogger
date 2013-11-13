@@ -23,7 +23,7 @@ extends ExternalResource {
 
     private static final Logger L = LoggerFactory.getLogger(H2DatabaseTCPServerManager.class);
 
-    private final static ConnectionInfo configuration = new ConnectionInfo();
+    private final static ConnectionInfo configuration = ConnectionInfoProvider.provide(Environment.UnitTest);
 
     public H2DatabaseTCPServerManager() {
         printStartLog();
@@ -39,7 +39,7 @@ extends ExternalResource {
         server.start();
         L.info("H2 Database Server started.");
         Properties info = new Properties();
-        info.setProperty("user", configuration.getUserName());
+        info.setProperty("user", configuration.getUsername());
         info.setProperty("password", configuration.getPassword());
         Connection conn = org.h2.Driver.load().connect(configuration.getUrl(), info);
         try {
@@ -54,17 +54,13 @@ extends ExternalResource {
         server.stop();
     }
 
-    /*    private String createUrl() {
-        return "jdbc:h2:" + server.getURL() + "/" + dbName;
-    }*/
-
     public void start() throws SQLException {
         L.info("Execute H2DatabaseServerResource before method.Start up H2 Database Server...");
         server = Server.createTcpServer("-baseDir", configuration.getBaseDir());
         server.start();
         L.info("H2 Database Server started.");
         Properties info = new Properties();
-        info.setProperty("user", configuration.getUserName());
+        info.setProperty("user", configuration.getUsername());
         info.setProperty("password", configuration.getPassword());
         Connection conn = org.h2.Driver.load().connect(configuration.getUrl(), info);
         try {
@@ -83,9 +79,9 @@ extends ExternalResource {
         L.info("Initialize H2DatabaseServerResource.");
         L.info("[Loaded Properties] --------------------------------------------------");
         L.info(" Base Directory : " + configuration.getBaseDir());
-        L.info(" Database Name  : " + configuration.getDbName());
+        L.info(" Database Name  : " + configuration.getDatabaseName());
         L.info(" SCHEMA NAME    : " + configuration.getSchema());
-        L.info(" USER NAME      : " + configuration.getUserName());
+        L.info(" USER NAME      : " + configuration.getUsername());
         L.info(" USER PASSWORD  : " + configuration.getPassword());
         L.info("----------------------------------------------------------------------"); 
     }
