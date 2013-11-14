@@ -4,6 +4,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
 /**
+ * <p>
+ * 動的プロキシのファクトリです.
+ * デコレート対象のクラスに対する動的プロキシを生成します.
+ * {@link }デコレートするプロセスは
+ * </p>
  * @author smts1008@outlook.com
  * @version 1.0.0
  */
@@ -14,19 +19,17 @@ public class ProxyFactory {
             final T obj,
             ProxyStrategy strategy) {
 
-        InvocationHandler handler;
-        if (strategy == null) {
-            handler = new LoggingInvocationHandler(obj);
-        } else {
-            System.out.println("================");
-            if (strategy == null) 
-                System.out.println("+++++++++++++++");
-            handler = new LoggingInvocationHandler(obj, strategy);
-        }
+        if (strategy == null)
+            throw new IllegalArgumentException("動的プロキシを生成するには{@link ProxyStrategy}の指定が必要です.");
 
+        InvocationHandler handler;
+        System.out.println("[ProxyFactory] [GENERATE] ================ [Start]");
+        System.out.println("クラス [" + clazz.getSimpleName() + "] の動的プロキシを生成します.");
+        handler = new LoggingInvocationHandler<T>(obj, strategy);
         T newProxyInstance = (T)Proxy.newProxyInstance(obj.getClass().getClassLoader(),
                 new Class[] {clazz},
                 handler);
+        System.out.println("[ProxyFactory] [GENERATE] ================ [End]");
 
         return newProxyInstance;
     }

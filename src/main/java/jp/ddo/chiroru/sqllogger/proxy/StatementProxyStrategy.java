@@ -6,14 +6,15 @@ public class StatementProxyStrategy implements ProxyStrategy {
 
     @Override
     public boolean isProxyMethod(String methodName) {
-        // TODO Auto-generated method stub
+        if (methodName.equals("executeQuery"))
+            return true;
         return false;
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] arguments,
-            Object object) {
-        // TODO Auto-generated method stub
+    public Object invoke(Object proxy, Method method, Object[] arguments, Object object) {
+        if (method.getName().equals("executeQuery"))
+            System.out.println(arguments[0]);
         return null;
     }
 
