@@ -5,33 +5,21 @@ import java.sql.ResultSet;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * <p>
- * 課題
- * #getConnection()で呼出し元のConnectionの動的プロキシインスタンスを返却する必要がある。
- * </p>
- * 
- * @author smts1008@outlook.com
- *
- */
-public class StatementProxyStrategy
-        extends AbstractProxyStrategy
-        implements ProxyStrategy {
+public class PreparedStatementProxyStrategy
+    extends AbstractProxyStrategy
+    implements ProxyStrategy {
 
     private Set<String> enwrapTargetMethodName = new HashSet<>();
     
-    public StatementProxyStrategy(Object target) {
+    public PreparedStatementProxyStrategy(Object target) {
         super(target);
         enwrapTargetMethodName.add("executeQuery");
-        enwrapTargetMethodName.add("getGeneratedKeys");
-        enwrapTargetMethodName.add("getResultSet");
     }
 
     @Override
     public boolean isProxyMethod(String methodName) {
-        if (enwrapTargetMethodName.contains(methodName)) {
+        if (enwrapTargetMethodName.contains(methodName))
             return true;
-        }
         
         return false;
     }
@@ -56,5 +44,6 @@ public class StatementProxyStrategy
         
         return o;
     }
+        
 
 }

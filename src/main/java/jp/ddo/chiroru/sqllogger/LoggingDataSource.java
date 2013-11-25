@@ -80,7 +80,7 @@ public class LoggingDataSource
             throws SQLException {
         
         Connection connection = wrappedDataSource.getConnection();
-        return ProxyFactory.getProxy(Connection.class, connection, new ConnectionProxyStrategy());
+        return ProxyFactory.getProxy(Connection.class, connection, new ConnectionProxyStrategy(connection));
     }
 
     @Override
@@ -88,7 +88,7 @@ public class LoggingDataSource
             throws SQLException {
         
         Connection connection = wrappedDataSource.getConnection(username, password);
-        return ProxyFactory.getProxy(Connection.class, connection, new ConnectionProxyStrategy());
+        return ProxyFactory.getProxy(Connection.class, connection, new ConnectionProxyStrategy(connection));
     }
 
 }

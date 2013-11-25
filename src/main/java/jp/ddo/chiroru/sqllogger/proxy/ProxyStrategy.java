@@ -1,5 +1,6 @@
 package jp.ddo.chiroru.sqllogger.proxy;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -7,12 +8,9 @@ import java.lang.reflect.Method;
  * @version 1.0.0
  */
 public interface ProxyStrategy {
-    
-    /**
-     * @param 
-     * @return 
-     */
-    public boolean isProxyMethod(String methodName);
-    
-    public Object invoke(Object proxy, Method method, Object[] arguments, Object object);
+
+    boolean isProxyMethod(String methodName);
+
+    Object invoke(Method method, Object[] arguments)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 }

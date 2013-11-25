@@ -12,7 +12,13 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-
+/**
+ * <p>
+ * {@link LogginDataSource}のユニットテストクラスです.
+ * </p>
+ * @author smts1008@outlook.com
+ * @since 1.0.0
+ */
 public class LoggingDataSourceTest {
 
     @ClassRule
