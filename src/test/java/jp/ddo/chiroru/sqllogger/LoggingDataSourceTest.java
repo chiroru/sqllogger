@@ -36,5 +36,10 @@ public class LoggingDataSourceTest {
         Connection conn = dataSource.getConnection();
         Statement statement = conn.createStatement();
         statement.executeQuery("SELECT * FROM \"sqllogger\".TEST ");
+        statement.execute("INSERT INTO \"sqllogger\".TEST (TEST_NAME) VALUES ('TEST')");
+        statement.addBatch("INSERT INTO \"sqllogger\".TEST (TEST_NAME) VALUES ('TEST1')");
+        statement.addBatch("INSERT INTO \"sqllogger\".TEST (TEST_NAME) VALUES ('TEST2')");
+        statement.addBatch("INSERT INTO \"sqllogger\".TEST (TEST_NAME) VALUES ('TEST3')");
+        statement.executeBatch();
     }
 }

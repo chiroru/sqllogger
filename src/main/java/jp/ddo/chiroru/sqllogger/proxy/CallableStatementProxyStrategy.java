@@ -5,9 +5,10 @@ import java.lang.reflect.Method;
 public class CallableStatementProxyStrategy
 extends AbstractProxyStrategy
 implements ProxyStrategy {
-
-    public CallableStatementProxyStrategy(Object target) {
-        super(target);
+    
+    public CallableStatementProxyStrategy(String sessionId, Object target) {
+        super(sessionId, target);
+        
     }
 
     @Override
@@ -17,13 +18,13 @@ implements ProxyStrategy {
     }
 
     @Override
-    protected void preProcess(Method method) {
+    protected void preProcess(Method method, Object[] arguments) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    protected void postProcess(Method method) {
+    protected void postProcess(Method method, Object[] arguments) {
         // TODO Auto-generated method stub
         
     }

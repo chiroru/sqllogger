@@ -38,8 +38,8 @@ implements ProxyStrategy {
 
     private Set<String> enwrapTargetMethodName = new HashSet<>();
 
-    public ConnectionProxyStrategy(Object target) {
-        super(target);
+    public ConnectionProxyStrategy(String sessionId, Object target) {
+        super(sessionId, target);
         enwrapTargetMethodName.add("createStatement");
         enwrapTargetMethodName.add("prepareStatement");
         enwrapTargetMethodName.add("prepareCall");
@@ -54,23 +54,23 @@ implements ProxyStrategy {
     }
 
     @Override
-    public void preProcess(Method method) {
+    public void preProcess(Method method, Object[] arguments) {
         // TODO Auto-generated method stub
     }
 
     @Override
-    public void postProcess(Method method) {
+    public void postProcess(Method method, Object[] arguments) {
         // TODO Auto-generated method stub
     }
 
     @Override
     public Object enwrapTarget(Object o, Method method) {
         if (method.getName().equals("createStatement")) {
-            return ProxyFactory.getProxy(Statement.class, (Statement)o, new StatementProxyStrategy(o));
+            return ProxyFactory.getProxy(Statement.class, (Statement)o, new StatementProxyStrategy(sessionId, o));
         } else if (method.getName().equals("prepareStatement")) {
-            return ProxyFactory.getProxy(PreparedStatement.class, (PreparedStatement)o, new PreparedStatementProxyStrategy(o));
+            return ProxyFactory.getProxy(PreparedStatement.class, (PreparedStatement)o, new PreparedStatementProxyStrategy(sessionId, o));
         } else if (method.getName().equals("prepareCall")) {
-            return ProxyFactory.getProxy(CallableStatement.class, (CallableStatement)o, new CallableStatementProxyStrategy(o));
+            return ProxyFactory.getProxy(CallableStatement.class, (CallableStatement)o, new CallableStatementProxyStrategy(sessionId, o));
         }
         return o;
     }

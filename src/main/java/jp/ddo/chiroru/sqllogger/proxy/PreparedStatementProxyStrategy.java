@@ -11,8 +11,8 @@ public class PreparedStatementProxyStrategy
 
     private Set<String> enwrapTargetMethodName = new HashSet<>();
     
-    public PreparedStatementProxyStrategy(Object target) {
-        super(target);
+    public PreparedStatementProxyStrategy(String sessionId, Object target) {
+        super(sessionId, target);
         enwrapTargetMethodName.add("executeQuery");
     }
 
@@ -25,13 +25,13 @@ public class PreparedStatementProxyStrategy
     }
 
     @Override
-    protected void preProcess(Method method) {
+    protected void preProcess(Method method, Object[] arguments) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    protected void postProcess(Method method) {
+    protected void postProcess(Method method, Object[] arguments) {
         // TODO Auto-generated method stub
         
     }
@@ -39,7 +39,7 @@ public class PreparedStatementProxyStrategy
     @Override
     protected Object enwrapTarget(Object o, Method method) {
         if (enwrapTargetMethodName.contains(method.getName())) {
-            return ProxyFactory.getProxy(ResultSet.class, (ResultSet)o, new ResultSetProxyStrategy(o));
+            return ProxyFactory.getProxy(ResultSet.class, (ResultSet)o, new ResultSetProxyStrategy(sessionId, o));
         }
         
         return o;
