@@ -1,6 +1,7 @@
 package jp.ddo.chiroru.sqllogger;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 
 import jp.ddo.chiroru.sqllogger.util.DataSourceUtil;
@@ -36,10 +37,23 @@ public class LoggingDataSourceTest {
         Connection conn = dataSource.getConnection();
         Statement statement = conn.createStatement();
         statement.executeQuery("SELECT * FROM \"sqllogger\".TEST ");
+        conn.close();
+        conn = dataSource.getConnection();
+        statement = conn.createStatement();
         statement.execute("INSERT INTO \"sqllogger\".TEST (TEST_NAME) VALUES ('TEST')");
+        conn.close();
+        conn = dataSource.getConnection();
+        statement = conn.createStatement();
         statement.addBatch("INSERT INTO \"sqllogger\".TEST (TEST_NAME) VALUES ('TEST1')");
         statement.addBatch("INSERT INTO \"sqllogger\".TEST (TEST_NAME) VALUES ('TEST2')");
         statement.addBatch("INSERT INTO \"sqllogger\".TEST (TEST_NAME) VALUES ('TEST3')");
         statement.executeBatch();
+        conn.close();
+        
+        conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement("INSERT INTO \"sqllogger\".TEST (TEST_ID, TEST_NAME) VALUES (?, ?)");
+        ps.setInt(1, 1);
+        ps.setString(2, "TEST");
+        ps.executeUpdate();
     }
 }

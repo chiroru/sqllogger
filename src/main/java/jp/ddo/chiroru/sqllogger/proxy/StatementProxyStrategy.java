@@ -5,10 +5,8 @@ import java.sql.ResultSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import jp.ddo.chiroru.sqllogger.SQLLogger;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.ddo.chiroru.sqllogger.model.LogInfo;
+import jp.ddo.chiroru.sqllogger.model.Query;
 
 /**
  * <p>
@@ -23,19 +21,17 @@ public class StatementProxyStrategy
         extends AbstractProxyStrategy
         implements ProxyStrategy {
 
-    private static final Logger L =
-            LoggerFactory.getLogger(SQLLogger.class);
-    
     private Long startTime;
     
     private Set<String> enwrapTargetMethodName = new HashSet<>();
     
-    public StatementProxyStrategy(String sessionId, Object target) {
-        super(sessionId, target);
+    public StatementProxyStrategy(Object target, LogInfo logInfo) {
+        super(target, logInfo);
         enwrapTargetMethodName.add("addBatch");
         enwrapTargetMethodName.add("execute");
         enwrapTargetMethodName.add("executeQuery");
         enwrapTargetMethodName.add("executeUpdate");
+        enwrapTargetMethodName.add("executeBatch");
         enwrapTargetMethodName.add("getGeneratedKeys");
         enwrapTargetMethodName.add("getResultSet");
     }
@@ -56,20 +52,23 @@ public class StatementProxyStrategy
 
     @Override
     protected void postProcess(Method method, Object[] arguments) {
-        Long elapsed = System.currentTimeMillis() - startTime;
-        StringBuilder message = new StringBuilder();
-        message.append(elapsed);
-        message.append(",");
-        if (method.getName().equals("executeQuery") || method.getName().equals("execute") || method.getName().equals("addBatch")) {
-            message.append(arguments[0].toString());
+        long elapsed = System.currentTimeMillis() - startTime;
+        if (method.getName().equals("executeQuery") || method.getName().equals("execute")) {
+            logInfo.setQuery(new Query(arguments[0].toString()));
+            logInfo.setElapsed(elapsed);
+            logInfo.setExecuteQuery(true);
+        } else if (method.getName().equals("executeBatch")) {
+            logInfo.setElapsed(elapsed);
+            logInfo.setExecuteQuery(true);
+        } else if (method.getName().equals("addBatch")) {
+            logInfo.setQuery(new Query(arguments[0].toString()));
         }
-        L.info(message.toString());
     }
 
     @Override
     protected Object enwrapTarget(Object o, Method method) {
         if (method.getName().equals("executeQuery") || method.getName().equals("getResultSet")) {
-            return ProxyFactory.getProxy(ResultSet.class, (ResultSet)o, new ResultSetProxyStrategy(sessionId, o));
+            return ProxyFactory.getProxy(traceId, ResultSet.class, (ResultSet)o, new ResultSetProxyStrategy(o, logInfo));
         }
         
         return o;

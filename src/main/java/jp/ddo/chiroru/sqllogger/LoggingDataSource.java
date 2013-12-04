@@ -8,8 +8,10 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import jp.ddo.chiroru.sqllogger.model.LogInfo;
 import jp.ddo.chiroru.sqllogger.proxy.ConnectionProxyStrategy;
 import jp.ddo.chiroru.sqllogger.proxy.ProxyFactory;
+import jp.ddo.chiroru.sqllogger.proxy.SessionIdGenerator;
 
 /**
  * <p>
@@ -22,8 +24,11 @@ public class LoggingDataSource
 
     private DataSource wrappedDataSource;
 
+    private SessionIdGenerator generator;
+
     public LoggingDataSource(DataSource wrappedDataSource) {
         this.wrappedDataSource = wrappedDataSource;
+        this.generator = new SessionIdGenerator.DefaultSessionIdGenerator();
     }
 
     @Override
@@ -80,14 +85,14 @@ public class LoggingDataSource
             throws SQLException {
         
         Connection connection = wrappedDataSource.getConnection();
-        return ProxyFactory.getProxy(Connection.class, connection, new ConnectionProxyStrategy("00000001", connection));
+        return ProxyFactory.getProxy(generator.generate(), Connection.class, connection, new ConnectionProxyStrategy(connection, new LogInfo()));
     }
 
     @Override
     public Connection getConnection(String username, String password)
             throws SQLException {
         Connection connection = wrappedDataSource.getConnection(username, password);
-        return ProxyFactory.getProxy(Connection.class, connection, new ConnectionProxyStrategy("00000001", connection));
+        return ProxyFactory.getProxy(generator.generate(), Connection.class, connection, new ConnectionProxyStrategy(connection, new LogInfo()));
     }
 
 }

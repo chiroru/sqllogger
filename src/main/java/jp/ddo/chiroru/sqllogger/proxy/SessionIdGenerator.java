@@ -1,5 +1,7 @@
 package jp.ddo.chiroru.sqllogger.proxy;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * <p>
  * DBとの接続セッションを識別する{@code ID}の生成器のインタフェースを表現するインタフェースです.<br />
@@ -15,9 +17,19 @@ public interface SessionIdGenerator {
     class DefaultSessionIdGenerator
             implements SessionIdGenerator {
 
+        AtomicLong counter = new AtomicLong();
+        
         @Override
         public String generate() {
-            return null;
+
+            String count = String.valueOf(counter.getAndAdd(1L));
+            StringBuilder buffer = new StringBuilder();
+            int countSize = count.getBytes().length;
+            for (int i = countSize; i < Long.SIZE; i++) {
+                buffer.append("0");
+            }
+            buffer.append(count);
+            return buffer.toString();
         }
     }
 }

@@ -7,6 +7,9 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
+import jp.ddo.chiroru.sqllogger.model.LogInfo;
+import jp.ddo.chiroru.sqllogger.model.Query;
+
 /**
  * <p>
  * プロキシ対象かつ返却値としてプロキシを返すメソッドは以下の通り.
@@ -35,11 +38,11 @@ import java.util.Set;
 public class ConnectionProxyStrategy
 extends AbstractProxyStrategy
 implements ProxyStrategy {
-
+    
     private Set<String> enwrapTargetMethodName = new HashSet<>();
 
-    public ConnectionProxyStrategy(String sessionId, Object target) {
-        super(sessionId, target);
+    public ConnectionProxyStrategy(Object target, LogInfo logInfo) {
+        super(target, logInfo);
         enwrapTargetMethodName.add("createStatement");
         enwrapTargetMethodName.add("prepareStatement");
         enwrapTargetMethodName.add("prepareCall");
@@ -55,22 +58,23 @@ implements ProxyStrategy {
 
     @Override
     public void preProcess(Method method, Object[] arguments) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void postProcess(Method method, Object[] arguments) {
-        // TODO Auto-generated method stub
+        if (method.getName().equals("prepareStatement")) {
+            logInfo.setQuery(new Query(arguments[0].toString()));
+        }
     }
 
     @Override
     public Object enwrapTarget(Object o, Method method) {
         if (method.getName().equals("createStatement")) {
-            return ProxyFactory.getProxy(Statement.class, (Statement)o, new StatementProxyStrategy(sessionId, o));
+            return ProxyFactory.getProxy(traceId, Statement.class, (Statement)o, new StatementProxyStrategy(o, logInfo));
         } else if (method.getName().equals("prepareStatement")) {
-            return ProxyFactory.getProxy(PreparedStatement.class, (PreparedStatement)o, new PreparedStatementProxyStrategy(sessionId, o));
+            return ProxyFactory.getProxy(traceId, PreparedStatement.class, (PreparedStatement)o, new PreparedStatementProxyStrategy(o, logInfo));
         } else if (method.getName().equals("prepareCall")) {
-            return ProxyFactory.getProxy(CallableStatement.class, (CallableStatement)o, new CallableStatementProxyStrategy(sessionId, o));
+            return ProxyFactory.getProxy(traceId, CallableStatement.class, (CallableStatement)o, new CallableStatementProxyStrategy(o, logInfo));
         }
         return o;
     }

@@ -2,12 +2,14 @@ package jp.ddo.chiroru.sqllogger.proxy;
 
 import java.lang.reflect.Method;
 
+import jp.ddo.chiroru.sqllogger.model.LogInfo;
+
 public class CallableStatementProxyStrategy
 extends AbstractProxyStrategy
 implements ProxyStrategy {
     
-    public CallableStatementProxyStrategy(String sessionId, Object target) {
-        super(sessionId, target);
+    public CallableStatementProxyStrategy(Object target, LogInfo logInfo) {
+        super(target, logInfo);
         
     }
 
